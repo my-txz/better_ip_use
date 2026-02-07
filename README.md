@@ -1,7 +1,12 @@
 # Better IP Use (BIU)
 
-![Spigot 1.19–1.20.4](https://img.shields.io/badge/Spigot-1.19%E2%80%931.20.4-00AAFF?logo=minecraft)  
-![Java 17](https://img.shields.io/badge/Java-17+-orange)
+报告问题及发布：https://github.com/my-txz/better_ip_use/issues
+
+Reporting issues and publishing:https://github.com/my-txz/better_ip_use/issues
+
+![Spigot 1.19–1.20.4](https://img.shields.io/badge/Bukkit-1.19%E2%80%931.21.11-00AAFF?logo=minecraft)  
+![Java 17](https://img.shields.io/badge/Java-17+-red)
+![Java 21](https://img.shields.io/badge/Java-21+-blue)
 
 A lightweight, conflict-resistant Minecraft plugin that displays player geolocation and filters inappropriate chat using **built-in integrations with Uapipro APIs**. Features include smart location formatting, sensitive word detection, chat cooldowns, and a community-driven reporting system.
 
@@ -12,6 +17,10 @@ A lightweight, conflict-resistant Minecraft plugin that displays player geolocat
 
 ---
 
+# Tips:
+###  Version download corresponds to:
+###  1.X supports 1.19-1.20.6  |  2.X supports 1.20.6-1.21.11 | 3. X supports 1.13-1.18.2 (in development)
+---
 ## ✨ Core Features
 
 ### 🌍 Smart Geolocation Display
@@ -74,41 +83,139 @@ Players can report others for recent inappropriate speech:
 ## 🔧 Configuration Highlights (`config.yml`)
 
 ```yaml
-language: "zh"  # or "en"
+# 语言设置: zh / en
+language: "zh"
 
+# 功能开关
 settings:
+  # 启用聊天合规检查
   enable_chat_check: true
+  # 启用预审核模式 (true = 发送后审核再显示, false = 实时审核拦截)
+  # true: 玩家发送 -> 服务器审核 -> 通过则广播显示, 不通过则屏蔽
+  # false: 玩家发送 -> 实时检测 -> 违规则拦截并取消事件
+  pre_moderation: true
+  # 启用 IP 显示 (Tab/头顶/聊天)
   enable_ip_display: true
 
+# 聊天冷却设置
 chat_cooldown:
   enabled: true
+  # 冷却时间 (秒)
   seconds: 5
 
+# 举报系统设置
 report_system:
   enabled: true
+  # 检查几分钟内的消息
   check_minutes_ago: 5
+  # 举报冷却时间 (秒)
   reporter_cooldown_seconds: 300
+  # 每次最多检查几条消息
   max_check_messages: 3
 
+# API 配置
 api:
   sensitive_word:
-    url: "https://uapis.cn/api/v1/sensitive-word/quick-check"
+    # 正确的API端点 - 使用uapis.cn的敏感词检测接口
+    url: "https://uapis.cn/api/v1/text/profanitycheck"
   ip_info:
+    # IP信息查询接口模板
     url_template: "https://uapis.cn/api/v1/network/ipinfo?ip=%IP%"
 
+# 显示设置
 display:
-  region_format: "auto"
+  region_format: "auto" # auto (取前两级) 或 full (完整)
   color: "&3"
   unknown_text: "Unknown"
+
+  # Tab 列表后缀
   tab_suffix_enabled: true
+  # 聊天后缀
   chat_suffix_enabled: true
+  # 头顶前缀
   nametag_prefix_enabled: true
 
+# 处罚设置
 punishment:
   warn_first: true
   mute_minutes: 5
   broadcast_on_mute: true
+
+# 消息多语言配置
+messages:
+  zh:
+    prefix: "&3[&bBIU&3] &r"
+    warn: "&c您的发言包含不合规内容，请注意文明用语。"
+    cooldown: "&c请勿频繁发言，还需等待 &e%time% &c秒。"
+    mute: "&c你因多次违规已被禁言 %mute_minutes% 分钟。"
+    mute_admin: "&c你已被管理员禁言。"
+    mute_active: "&c你当前处于禁言状态，无法发言。"
+    mute_broadcast: "&c玩家 &e%player% &c因多次违规已被禁言 %mute_minutes% 分钟。"
+    unmuted: "&a你已被解除禁言，可以正常发言了。"
+    unmuted_auto: "&a你的禁言时间已到，已自动解除禁言。"
+    reload: "&a配置已重载。"
+    cache_cleared: "&aIP地址缓存已清除，所有玩家显示已重置。"
+    no_permission: "&c你没有权限执行此操作。"
+    help: |
+      &a/biu help &7- 显示帮助
+      &a/biu reload &7- 重载配置
+      &a/biu clearcache &7- 清除IP缓存
+      &a/biu report <玩家> &7- 举报玩家近期违规发言
+      &a/biu mute <玩家> &7- 手动禁言玩家
+      &a/biu unmute <玩家> &7- 解除玩家禁言
+      &a/biu check <文本> &7- 检测文本是否违规
+    report_usage: "&c用法: /biu report <玩家名>"
+    report_disabled: "&c举报系统当前已禁用。"
+    report_cooldown: "&c举报功能冷却中，还需等待 &e%time% &c秒。"
+    report_self: "&c不能举报自己。"
+    report_target_no_history: "&c该玩家近期无可举报的发言记录。"
+    report_checking: "&a正在检查玩家 &e%player% &a的近期发言..."
+    report_success_compliant: "&a举报检查结果：玩家 &e%player% &a近期发言合规。"
+    report_success_forbidden: "&c举报检查结果：玩家 &e%player% &c存在违规发言，已自动禁言。"
+    report_broadcast: "&c玩家 &e%player% &c因被举报违规发言，已被系统禁言。举报者: &e%reporter%"
+    mute_cmd_usage: "&c用法: /biu mute <玩家名>"
+    unmute_cmd_usage: "&c用法: /biu unmute <玩家名>"
+    player_muted: "&c已手动禁言玩家 &e%player%&c。"
+    player_unmuted: "&a已解禁玩家 &e%player%&a。"
+    player_not_found: "&c未找到玩家: &e%player%&c。"
+
+  en:
+    prefix: "&3[&bBIU&3] &r"
+    warn: "&cYour message contains non-compliant content. Please be civil."
+    cooldown: "&cPlease do not spam. Wait &e%time% &cseconds."
+    mute: "&cYou have been muted for %mute_minutes% minutes due to repeated violations."
+    mute_admin: "&cYou have been muted by an administrator."
+    mute_active: "&cYou are currently muted and cannot chat."
+    mute_broadcast: "&cPlayer &e%player% &chas been muted for %mute_minutes% minutes."
+    unmuted: "&aYou have been unmuted. You can chat normally now."
+    unmuted_auto: "&aYour mute time has expired. You can chat normally now."
+    reload: "&aConfiguration reloaded."
+    cache_cleared: "&aIP address cache cleared."
+    no_permission: "&cYou do not have permission."
+    help: |
+      &a/biu help &7- Show help
+      &a/biu reload &7- Reload config
+      &a/biu clearcache &7- Clear IP cache
+      &a/biu report <player> &7- Report a player for recent bad chat
+      &a/biu mute <player> &7- Manually mute a player
+      &a/biu unmute <player> &7- Unmute a player
+      &a/biu check <text> &7- Check if text violates rules
+    report_usage: "&cUsage: /biu report <player>"
+    report_disabled: "&cReport system is currently disabled."
+    report_cooldown: "&cReport function is on cooldown. Wait &e%time% &cseconds."
+    report_self: "&cYou cannot report yourself."
+    report_target_no_history: "&cTarget player has no recent chat history to report."
+    report_checking: "&aChecking recent messages from &e%player%&a..."
+    report_success_compliant: "&aReport Result: Player &e%player% &ais compliant."
+    report_success_forbidden: "&cReport Result: Player &e%player% &cviolated rules. Auto-muted."
+    report_broadcast: "&cPlayer &e%player% &cwas muted due to report. Reporter: &e%reporter%"
+    mute_cmd_usage: "&cUsage: /biu mute <player>"
+    unmute_cmd_usage: "&cUsage: /biu unmute <player>"
+    player_muted: "&cPlayer &e%player%&c has been manually muted."
+    player_unmuted: "&aPlayer &e%player%&c has been unmuted."
+    player_not_found: "&cPlayer not found: &e%player%&c."
 ```
+
 
 All display elements share the same color and fallback text.
 
@@ -140,8 +247,8 @@ No extra dependencies — uses Spigot’s built-in Gson.
 
 ---
 
-> Made by a student developer. No telemetry, no ads, no hidden features.  
-> 由学生开发者制作，无遥测、无广告、无隐藏功能。  
+>  No telemetry, no ads, no hidden features.  
+> 无遥测、无广告、无隐藏功能。  
 >  
 > **Complies with Modrinth Community Guidelines.**  
 > **遵守 Modrinth 社区规范。**
